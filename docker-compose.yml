@@ -1,16 +1,22 @@
-version: "3"
+version: "1"
 services:
   db:
-    image:  postgres
+    image:  mysql
     restart: always 
     ports:
-      - "5432:5432"
+      - "3306:3306"
     environment:
-       POSTGRES_PASSWORD: pass123
+       MYSQL_ROOT_PASSWORD: admin
+       MYSQL_DATABASE: invoicesApp
+    volumes:
+      - mysqldata:/var/lib/mysql
+volumes:
+  mysqldata:
+     
   # test-db:
   #   image:  postgres
   #   restart: always 
   #   ports:
-  #     - "5433:5432"
+  #     - "3306:3306"
   #   environment:
-  #      POSTGRES_PASSWORD: pass123
+  #      MYSQL_ROOT_PASSWORD: admin
