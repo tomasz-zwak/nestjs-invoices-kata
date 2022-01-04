@@ -26,14 +26,12 @@ export class InvoicesService {
   ) {}
 
   async findAll() {
-    return await this.invoiceRepository.find({
-      relations: ['contractor'],
-    });
+    return await this.invoiceRepository.find();
   }
 
   async findOne(id: number) {
     const invoice = await this.invoiceRepository.findOne(id, {
-      // relations: ['contractor', 'invoiceItems'],
+      relations: ['contractor', 'invoiceItems'],
     });
     if (!invoice) {
       throw new NotFoundException(`Invoice #${id} could not be found.`);
@@ -52,7 +50,7 @@ export class InvoicesService {
       contractorId,
       newContractor,
     );
-    console.log(invoiceDto);
+
     return this.invoiceRepository.save({
       ...invoice,
       invoiceNo,
@@ -72,11 +70,13 @@ export class InvoicesService {
       contractorId,
       newContractor,
     );
+
     invoice = await this.invoiceRepository.preload({
       id: id,
       ...invoiceDto,
       contractor,
     });
+
     return this.invoiceRepository.save(invoice);
   }
 
@@ -92,6 +92,13 @@ export class InvoicesService {
 
   async listItemCategories() {
     return await this.invoiceItemCategoryRepository.find();
+  }
+
+  async listInvoiceItems(invoiceId: number) {
+    const invoice = await this.invoiceRepository.findOne(invoiceId, {
+      relations: ['invoiceItems'],
+    });
+    return invoice.invoiceItems;
   }
 
   private async getNextInvoiceNumber() {

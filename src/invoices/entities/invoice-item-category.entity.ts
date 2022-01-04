@@ -14,4 +14,5 @@ export class InvoiceItemCategory {
 
   @Column()
   typeNo: string;
+
 }

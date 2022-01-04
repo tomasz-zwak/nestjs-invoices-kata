@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { MeasureUnit } from '../invoice.type';
 import { InvoiceItemCategory } from './invoice-item-category.entity';
 import { Invoice } from './invoice.entity';
@@ -20,8 +13,7 @@ export class InvoiceItem {
   })
   invoice: Invoice;
 
-  @OneToOne(() => InvoiceItemCategory)
-  @JoinColumn()
+  @ManyToOne(() => InvoiceItemCategory)
   category: InvoiceItemCategory;
 
   @Column()

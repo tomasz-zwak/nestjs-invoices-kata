@@ -30,6 +30,12 @@ export class InvoicesController {
     return this.invoicesService.findOne(id);
   }
 
+  @Get(':id/invoiceItems')
+  listInvoiceItems(@Param('id') id: number) {
+    console.log('adadasdasdassad');
+    return this.invoicesService.listInvoiceItems(id);
+  }
+
   @Post()
   create(@Body() invoiceDto: CreateInvoiceDto) {
     return this.invoicesService.create(invoiceDto);
