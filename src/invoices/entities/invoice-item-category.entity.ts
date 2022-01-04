@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity()
-@Unique(['name', 'symbol', 'typeNo'])
+@Unique(['name', 'symbol'])
 export class InvoiceItemCategory {
   @PrimaryGeneratedColumn()
   id: number;

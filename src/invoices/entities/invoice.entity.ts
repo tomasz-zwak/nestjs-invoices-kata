@@ -1,67 +1,113 @@
 import {
+  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Currency } from '../types/invoice-types';
-import { Contractor } from './contractor.entity';
+import { User } from '../../user/entities/user.entity';
+import {
+  Currency,
+  InvoiceCalculationMethod,
+  PaymentMethod,
+} from '../invoice.type';
+import { Contractor } from '../../contractors/entities/contractor.entity';
 import { InvoiceItem } from './invoice-item.entity';
-import { PaymentMethod } from './payment-method.entity';
+import { defaultAccountingPeriod } from '../../commons/utils/utils';
 
 @Entity()
 export class Invoice {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column() //todo: autogenerating
+  @Column({ unique: true }) //todo: if not provided autogenerate
   invoiceNo: string;
 
-  @Column({ type: 'date' })
-  issuedAt?: string; //if not provided same as createdAt
+  @Column({ type: 'date', default: null })
+  issuedAt: Date; //if not provided same as createdAt
 
   @CreateDateColumn()
-  createdAt: string;
+  createdAt: Date;
 
   @UpdateDateColumn()
-  updatedAt: string;
+  updatedAt: Date;
 
-  @Column({ type: 'date' })
-  saleDate?: string; //if not provided same as createdAt
+  @Column({ type: 'date', default: null })
+  saleDate: Date; //if not provided same as createdAt
 
-  @Column({ type: 'date' })
-  accountingPeriod: string;
+  @Column({ type: 'date', default: defaultAccountingPeriod() })
+  accountingPeriod: Date; //default: current month
 
-  @Column({ default: 'net' })
-  invoiceCalculationMethod: string;
+  @Column({
+    default: InvoiceCalculationMethod.NET,
+    type: 'enum',
+    enum: InvoiceCalculationMethod,
+  })
+  invoiceCalculationMethod: InvoiceCalculationMethod;
 
   @Column({ default: Currency.PLN, type: 'enum', enum: Currency })
   currency: string;
 
-  @OneToMany(() => InvoiceItem, (invoiceItem) => invoiceItem.invoice)
+  @OneToMany(() => InvoiceItem, (invoiceItem) => invoiceItem.invoice, {
+    cascade: true,
+  })
   invoiceItems: InvoiceItem[];
 
   @Column()
   comment: string;
 
-  @OneToOne(() => PaymentMethod)
-  @JoinColumn()
+  @Column({ default: PaymentMethod.CARD, type: 'enum', enum: PaymentMethod })
   paymentMethod: PaymentMethod;
 
   @Column({ type: 'date' })
-  paymentDeadline: string;
+  paymentDeadline: Date;
 
-  @Column({ type: 'decimal' })
+  @Column({ type: 'decimal', default: 0 })
   paidAmount: number;
 
   @Column({ type: 'date' })
-  paidDate: string;
+  paidDate: Date;
 
   @ManyToOne(() => Contractor, (contractor) => contractor.invoices)
   contractor: Contractor;
+
+  @ManyToOne(() => User, (user) => user.invoices, { nullable: true })
+  user: User;
+
+  @Column({ default: false, nullable: false })
+  approved: boolean;
+
+  @BeforeInsert()
+  populateDates() {
+    console.log('adadasdas');
+    this.populateIssuedAt();
+    this.populateSaleDate();
+    this.populateAccountingPeriod();
+    this.populatePaymentDeadline();
+  }
+
+  populateIssuedAt() {
+    if (!this.issuedAt) {
+      this.issuedAt = this.createdAt;
+    }
+  }
+  populateSaleDate() {
+    if (!this.saleDate) {
+      this.saleDate = new Date();
+    }
+  }
+  populateAccountingPeriod() {
+    if (!this.accountingPeriod) {
+      this.accountingPeriod = this.createdAt;
+    }
+  }
+
+  populatePaymentDeadline() {
+    if (!this.paymentDeadline) {
+      this.paymentDeadline = this.contractor.defaultPaymentDeadline;
+    }
+  }
 }

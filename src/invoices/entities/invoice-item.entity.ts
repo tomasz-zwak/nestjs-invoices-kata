@@ -6,16 +6,18 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { MeasureUnit } from '../invoice.type';
 import { InvoiceItemCategory } from './invoice-item-category.entity';
 import { Invoice } from './invoice.entity';
-import { Unit } from './unit.entity';
 
 @Entity()
 export class InvoiceItem {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Invoice, (invoice) => invoice.invoiceItems)
+  @ManyToOne(() => Invoice, (invoice) => invoice.invoiceItems, {
+    onDelete: 'CASCADE',
+  })
   invoice: Invoice;
 
   @OneToOne(() => InvoiceItemCategory)
@@ -23,11 +25,13 @@ export class InvoiceItem {
   category: InvoiceItemCategory;
 
   @Column()
+  description: string;
+
+  @Column()
   amount: number;
 
-  @OneToOne(() => Unit)
-  @JoinColumn()
-  unit: Unit;
+  @Column({ type: 'enum', enum: MeasureUnit })
+  unit: MeasureUnit;
 
   @Column()
   price: number;

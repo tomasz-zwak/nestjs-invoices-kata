@@ -2,14 +2,14 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
-  Unique,
 } from 'typeorm';
-import { Country } from './country.entity';
-import { Invoice } from './invoice.entity';
-import { PaymentMethod } from './payment-method.entity';
+import { PaymentMethod } from '../../invoices/invoice.type';
+import { Country } from '../../invoices/entities/country.entity';
+import { Invoice } from '../../invoices/entities/invoice.entity';
 
 @Entity()
 export class Contractor {
@@ -19,11 +19,12 @@ export class Contractor {
   @Column({ nullable: false })
   privatePerson: boolean;
 
-  @OneToMany(() => Invoice, (invoice) => invoice.contractor)
+  @OneToMany(() => Invoice, (invoice) => invoice.contractor, {
+    nullable: true,
+  })
   invoices: Invoice[];
 
-  @OneToOne(() => Country)
-  @JoinColumn()
+  @ManyToOne(() => Country, (country) => country.contractors)
   country: Country;
 
   @Column()
@@ -44,12 +45,11 @@ export class Contractor {
   @Column()
   postalCode: string;
 
-  @OneToOne(() => PaymentMethod)
-  @JoinColumn()
+  @Column({ default: PaymentMethod.CARD, type: 'enum', enum: PaymentMethod })
   paymentMethod: PaymentMethod;
 
-  @Column()
-  defaultPaymentDeadline: string;
+  @Column({ type: 'date' })
+  defaultPaymentDeadline: Date;
 
   @Column()
   email: string;

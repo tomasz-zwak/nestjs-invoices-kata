@@ -3,8 +3,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from '@hapi/joi';
 import { ConfigModule } from '@nestjs/config';
-import { Invoice } from '../invoices/entities/invoice.entity';
-import { PaymentMethod } from '../invoices/entities/payment-method.entity';
 
 @Module({
   imports: [
@@ -16,11 +14,12 @@ import { PaymentMethod } from '../invoices/entities/payment-method.entity';
         username: process.env.DATABASE_USER,
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE_NAME,
+        autoLoadEntities: true,
         synchronize: true,
-        entities: ['dist/**/*.entity{.ts,.js}'],
       }),
     }),
     ConfigModule.forRoot({
+      envFilePath: ['.env.mysql', '.env.postgres'],
       validationSchema: Joi.object({
         DATABASE_HOST: Joi.required(),
         DATABASE_PORT: Joi.number().default(3306),
