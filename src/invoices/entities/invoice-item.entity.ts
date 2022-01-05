@@ -19,18 +19,24 @@ export class InvoiceItem {
   @Column()
   description: string;
 
-  @Column()
+  @Column({ type: 'int' })
   amount: number;
 
   @Column({ type: 'enum', enum: MeasureUnit })
   unit: MeasureUnit;
 
-  @Column()
+  @Column({ type: 'numeric', precision: 13, scale: 2 })
   price: number;
 
-  @Column()
+  @Column({ type: 'decimal', precision: 13, scale: 2 })
   discount: number; //0.00 - 1.00 for percentage values
 
-  @Column()
+  @Column({ type: 'decimal', precision: 13, scale: 2 })
   vatRate: number; //0.00 - 1.00 for percentage values
+
+  @Column({ default: null, type: 'decimal', precision: 13, scale: 2 })
+  grossValue: number;
+
+  @Column({ default: null, type: 'decimal', precision: 13, scale: 2 })
+  vatValue: number;
 }

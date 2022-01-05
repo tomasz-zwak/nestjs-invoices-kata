@@ -6,14 +6,18 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as _ from 'lodash';
+import { values } from 'lodash';
 import { Repository } from 'typeorm';
+import { round } from '../commons/utils/utils';
 import { ContractorsService } from '../contractors/contractors.service';
 import { CreateContractorDto } from '../contractors/dto/create-contractor.dto';
 import { Contractor } from '../contractors/entities/contractor.entity';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 import { InvoiceItemCategory } from './entities/invoice-item-category.entity';
+import { InvoiceItem } from './entities/invoice-item.entity';
 import { Invoice } from './entities/invoice.entity';
+import { InvoiceCalculationMethod } from './invoice.type';
 
 @Injectable()
 export class InvoicesService {
@@ -22,6 +26,8 @@ export class InvoicesService {
     private readonly invoiceRepository: Repository<Invoice>,
     @InjectRepository(InvoiceItemCategory)
     private readonly invoiceItemCategoryRepository: Repository<InvoiceItemCategory>,
+    @InjectRepository(InvoiceItem)
+    private readonly invoiceItemRepository: Repository<InvoiceItem>,
     private readonly contractorService: ContractorsService,
   ) {}
 
@@ -51,16 +57,24 @@ export class InvoicesService {
       newContractor,
     );
 
-    return this.invoiceRepository.save({
+    const { invoiceItems, grossValue, vatValue } =
+      this.calculateInvoice(invoice);
+
+    return await this.invoiceRepository.save({
       ...invoice,
       invoiceNo,
       contractor,
+      invoiceItems,
+      grossValue,
+      vatValue,
     });
   }
 
   async update(id: number, invoiceDto: UpdateInvoiceDto) {
-    // console.log(invoiceDto);
-    let invoice = await this.findOne(id);
+    const invoice = await this.invoiceRepository.preload({
+      id: id,
+      ...invoiceDto,
+    });
     if (invoice.approved) {
       throw new BadRequestException('Cannot edit already approved invoices.');
     }
@@ -71,13 +85,16 @@ export class InvoicesService {
       newContractor,
     );
 
-    invoice = await this.invoiceRepository.preload({
-      id: id,
-      ...invoiceDto,
-      contractor,
-    });
+    const { invoiceItems, grossValue, vatValue } =
+      this.calculateInvoice(invoice);
 
-    return this.invoiceRepository.save(invoice);
+    return await this.invoiceRepository.save({
+      ...invoice,
+      contractor,
+      invoiceItems,
+      grossValue,
+      vatValue,
+    });
   }
 
   async delete(id: number) {
@@ -101,10 +118,19 @@ export class InvoicesService {
     return invoice.invoiceItems;
   }
 
+  async approve(id: number, value: boolean) {
+    await this.invoiceRepository.update(id, { approved: value });
+    if (value) {
+      return `Invoice #${id} approved.`;
+    } else {
+      return `Invoice #${id} unapproved.`;
+    }
+  }
+
   private async getNextInvoiceNumber() {
     const invoiceNoArr = await this.invoiceRepository.find({
       select: ['invoiceNo'],
-      order: { createdAt: 'DESC' },
+      order: { id: 'ASC' },
       take: 1,
     });
     return this.generateNextInvoiceNumber(invoiceNoArr?.[0]?.invoiceNo);
@@ -129,8 +155,41 @@ export class InvoicesService {
   ) {
     if (contractorId) {
       return await this.contractorService.findOne(contractorId);
-    } else {
+    } else if (newContractor) {
       return await this.contractorService.create(newContractor);
     }
+  }
+
+  private calculateInvoice(invoice: Invoice) {
+    const invoiceItems = invoice.invoiceItems;
+    const calculationMethod = invoice.invoiceCalculationMethod;
+    invoiceItems.forEach((item) => {
+      const { amount, price, discount, vatRate } = item;
+      if (calculationMethod === InvoiceCalculationMethod.NET) {
+        item.grossValue = round(
+          price * amount * (1 - 1 * discount + 1 * vatRate),
+          2,
+        );
+        item.vatValue = round(item.grossValue - price * amount, 2);
+      } else {
+        item.grossValue = round(price * amount, 2);
+        item.vatValue = round(
+          item.grossValue - item.grossValue / (1 + vatRate),
+          2,
+        );
+      }
+    });
+    const invoiceTotals = invoiceItems.reduce(
+      (curr, next) => {
+        const { grossValue, vatValue } = curr;
+        return {
+          grossValue: grossValue + next.grossValue,
+          vatValue: vatValue + next.vatValue,
+        };
+      },
+      { grossValue: 0, vatValue: 0 },
+    );
+
+    return { invoiceItems, ...invoiceTotals };
   }
 }

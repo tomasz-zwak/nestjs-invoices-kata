@@ -8,6 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
+import { InvoiceApproveDto } from './dto/invoice-approve.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 import { InvoicesService } from './invoices.service';
 
@@ -32,8 +33,15 @@ export class InvoicesController {
 
   @Get(':id/invoiceItems')
   listInvoiceItems(@Param('id') id: number) {
-    console.log('adadasdasdassad');
     return this.invoicesService.listInvoiceItems(id);
+  }
+
+  @Patch(':id/approve')
+  approveInvoice(
+    @Param('id') id: number,
+    @Body() approveDto: InvoiceApproveDto,
+  ) {
+    return this.invoicesService.approve(id, approveDto.approve);
   }
 
   @Post()

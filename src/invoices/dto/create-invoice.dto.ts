@@ -53,6 +53,7 @@ export class CreateInvoiceDto {
 
   @ApiProperty()
   @IsDate()
+  @IsOptional()
   paymentDeadline: Date;
 
   @ApiProperty()
@@ -79,7 +80,7 @@ export class CreateInvoiceDto {
   @RequireContractorIdOrNew('newContractor', {
     message: 'Contractor ID or new contractor object required',
   })
-  contractorId: number;
+  contractorId?: number;
 
   @ApiProperty({
     description:
@@ -91,5 +92,5 @@ export class CreateInvoiceDto {
     message: 'Contractor ID or new contractor object required',
   })
   @Type(() => CreateContractorDto)
-  newContractor: CreateContractorDto;
+  newContractor?: CreateContractorDto;
 }

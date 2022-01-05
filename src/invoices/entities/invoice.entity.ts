@@ -65,7 +65,13 @@ export class Invoice {
   @Column({ type: 'date' })
   paymentDeadline: Date;
 
-  @Column({ type: 'decimal', default: 0 })
+  @Column({ default: null, type: 'decimal', precision: 13, scale: 2 })
+  grossValue: number;
+
+  @Column({ default: null, type: 'decimal', precision: 13, scale: 2 })
+  vatValue: number;
+
+  @Column({ type: 'decimal', precision: 13, scale: 2, default: 0 })
   paidAmount: number;
 
   @Column({ type: 'date' })
@@ -82,7 +88,7 @@ export class Invoice {
 
   @BeforeInsert()
   populateDates() {
-    console.log('adadasdas');
+    console.log('this is not working');
     this.populateIssuedAt();
     this.populateSaleDate();
     this.populateAccountingPeriod();
