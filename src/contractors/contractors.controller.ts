@@ -7,10 +7,11 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ContractorsService } from './contractors.service';
 import { CreateContractorDto } from './dto/create-contractor.dto';
 import { UpdateContractorDto } from './dto/update-contractor.dto';
-
+@ApiTags('contractors')
 @Controller('contractors')
 export class ContractorsController {
   constructor(private readonly contractorsService: ContractorsService) {}
