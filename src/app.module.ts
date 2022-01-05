@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { ContractorsModule } from './contractors/contractors.module';
 import { AuthModule } from './auth/auth.module';
 import { PdfModule } from './pdf/pdf.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PdfModule } from './pdf/pdf.module';
     ContractorsModule,
     AuthModule,
     PdfModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
