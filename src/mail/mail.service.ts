@@ -1,23 +1,23 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Invoice } from '../invoices/entities/invoice.entity';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class MailService {
-  constructor(
-    private mailerService: MailerService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private mailerService: MailerService) {}
 
-  async sendMail(data: { username: string; grossValue: number }) {
-    console.log(this.configService.get('MAIL_HOST'));
+  async sendNewInvoiceMail(user: User, invoice: Invoice) {
     await this.mailerService.sendMail({
-      to: 't.zwak@selleo.com',
-      from: '"Support Team" <support@example.com>',
-      subject: 'Welcome to Nice App! Confirm your Email',
+      to: invoice.contractor.email,
+      from: 'InvoicesApp',
+      subject: 'Masz nową fakturę',
       template: 'new-invoice.hbs',
       context: {
-        ...data,
+        user: {
+          name: 'Test userName',
+        },
+        invoice,
       },
     });
   }

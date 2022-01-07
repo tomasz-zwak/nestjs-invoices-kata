@@ -8,6 +8,8 @@ import { Contractor } from '../contractors/entities/contractor.entity';
 import { Country } from './entities/country.entity';
 import { InvoiceItemCategory } from './entities/invoice-item-category.entity';
 import { ContractorsService } from '../contractors/contractors.service';
+import { MailService } from '../mail/mail.service';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
@@ -18,8 +20,9 @@ import { ContractorsService } from '../contractors/contractors.service';
       Contractor,
       Country,
     ]),
+    MailModule,
   ],
-  providers: [InvoicesService, ContractorsService],
+  providers: [InvoicesService, ContractorsService, MailService],
   controllers: [InvoicesController],
 })
 export class InvoicesModule {}

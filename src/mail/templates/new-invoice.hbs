@@ -1,21 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset='UTF-8' />
+    <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
     <title>Nowa faktura oczekuje na płatność</title>
   </head>
   <body
-    style="
+    style='
       display: flex;
       flex-direction: column;
       justify-items: center;
       align-items: center;
-    "
+    '
   >
     <h1>Nowa faktura oczekuje na płatność</h1>
-    <p>{{ username }} wystawił Ci nową fakturę na kwotę {{ grossValue }}</p>
-    <button>Pobierz fakture</button>
+    <p>{{user.name}}
+      wystawił Ci nową fakturę na kwotę
+      {{invoice.grossValue}}</p>
+    <button>Pobierz fakturę</button>
   </body>
 </html>
