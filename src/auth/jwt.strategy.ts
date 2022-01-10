@@ -2,7 +2,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt } from 'passport-jwt';
 import { Strategy } from 'passport-jwt';
-import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { UserPayload } from '../user/user.type';
 
@@ -24,7 +23,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('User does not exist.');
     }
     const { email, name, role } = user;
-    this.userService.currentUser = user;
     return {
       email,
       name,
