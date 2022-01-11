@@ -10,6 +10,7 @@ import {
 import { PaymentMethod } from '../../invoices/invoice.type';
 import { Country } from '../../invoices/entities/country.entity';
 import { Invoice } from '../../invoices/entities/invoice.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity()
 export class Contractor {
@@ -53,4 +54,7 @@ export class Contractor {
 
   @Column()
   email: string;
+
+  @ManyToOne(() => User, (user) => user.contractors)
+  user: User;
 }

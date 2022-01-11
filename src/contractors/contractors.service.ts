@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Country } from '../invoices/entities/country.entity';
+import { User } from '../user/entities/user.entity';
 import { CreateContractorDto } from './dto/create-contractor.dto';
 import { UpdateContractorDto } from './dto/update-contractor.dto';
 import { Contractor } from './entities/contractor.entity';
@@ -15,15 +16,18 @@ export class ContractorsService {
     private readonly countryRepository: Repository<Country>,
   ) {}
 
-  async findAll() {
+  async findAll(user: User) {
     return await this.contractorsRepository.find({
-      relations: ['country', 'invoices'],
+      where: {
+        user,
+      },
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, user: User) {
     const contractor = await this.contractorsRepository.findOne(id, {
-      // relations: ['country', 'invoices'],
+      relations: ['country', 'invoices'],
+      where: { user },
     });
     if (!contractor) {
       throw new NotFoundException(`Contractor #${id} could not be found.`);
@@ -31,11 +35,12 @@ export class ContractorsService {
     return contractor;
   }
 
-  async create(contractorDto: CreateContractorDto) {
+  async create(contractorDto: CreateContractorDto, user: User) {
     const country = await this.preloadCountryByName(contractorDto.country);
     const contractor = this.contractorsRepository.create({
       ...contractorDto,
       country,
+      user,
     });
     return await this.contractorsRepository.save(contractor);
   }
@@ -55,8 +60,8 @@ export class ContractorsService {
     return this.contractorsRepository.save(contractor);
   }
 
-  async delete(id: number) {
-    const contractor = await this.findOne(id);
+  async delete(id: number, user: User) {
+    const contractor = await this.findOne(id, user);
     try {
       await this.contractorsRepository.remove(contractor);
     } catch (error) {
