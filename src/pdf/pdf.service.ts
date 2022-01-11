@@ -3,36 +3,30 @@ import { readFileSync } from 'fs';
 import Handlebars from 'handlebars';
 import { join } from 'path';
 import * as Puppeteer from 'puppeteer';
-
-export type PDFTemplate = {
-  path: string;
-  options: Record<string, unknown>;
-};
-
-export type PDFResponse = {
-  name: string;
-  data: Buffer;
-};
+import { PdfResponse, PdfTemplate, PdfTemplateData } from './pdf.type';
 
 @Injectable()
 export class PdfService {
-  async pdftest(pdfTemplate?: PDFTemplate): Promise<PDFResponse> {
-    const path = this.getPath('invoice.template');
-    console.log(path);
+  async generatePdf(
+    pdfTemplate: PdfTemplate,
+    data: PdfTemplateData,
+  ): Promise<PdfResponse> {
+    const path = this.getPath(pdfTemplate);
     const templateRaw = readFileSync(path).toString();
+
     const template = Handlebars.compile(templateRaw);
-    const context = { name: 'test user', data: 1232132132131 };
-    const html = template(context);
+    const html = template({ ...data });
+
     const browser = await Puppeteer.launch();
     const page = await browser.newPage();
     page.setContent(html);
     const pdf = await page.pdf({ format: 'a4' });
-
     await browser.close();
-    return { name: 'invoice.pdf', data: pdf };
+
+    return { name: `${data.invoice.invoiceNo}`, data: pdf };
   }
 
   private getPath(templateName: string) {
-    return join(__dirname, 'templates', `${templateName}.hbs`);
+    return join(__dirname, 'templates', `${templateName}.template.hbs`);
   }
 }
