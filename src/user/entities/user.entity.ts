@@ -7,7 +7,6 @@ import {
 } from 'typeorm';
 import { Invoice } from '../../invoices/entities/invoice.entity';
 import { Role } from '../user.type';
-import { randomUUID } from 'crypto';
 import { Contractor } from '../../contractors/entities/contractor.entity';
 
 @Unique(['email'])
@@ -25,7 +24,7 @@ export class User {
   @Column({ nullable: true })
   passwordHash: string;
 
-  @Column({ type: 'enum', enum: Role })
+  @Column({ type: 'enum', enum: Role, default: Role.OWNER })
   role: Role;
 
   @OneToMany(() => Invoice, (invoice) => invoice.user)
