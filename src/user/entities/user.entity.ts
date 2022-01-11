@@ -8,6 +8,7 @@ import {
 import { Invoice } from '../../invoices/entities/invoice.entity';
 import { Role } from '../user.type';
 import { randomUUID } from 'crypto';
+import { Contractor } from '../../contractors/entities/contractor.entity';
 
 @Unique(['email'])
 @Entity()
@@ -41,4 +42,7 @@ export class User {
 
   @Column()
   passwordResetId: string;
+
+  @OneToMany(() => Contractor, (contractor) => contractor.user)
+  contractors: Contractor[];
 }

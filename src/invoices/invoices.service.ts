@@ -12,6 +12,7 @@ import { round } from '../commons/utils/utils';
 import { ContractorsService } from '../contractors/contractors.service';
 import { CreateContractorDto } from '../contractors/dto/create-contractor.dto';
 import { Contractor } from '../contractors/entities/contractor.entity';
+import { User } from '../user/entities/user.entity';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 import { InvoiceItemCategory } from './entities/invoice-item-category.entity';
@@ -31,13 +32,16 @@ export class InvoicesService {
     private readonly contractorService: ContractorsService,
   ) {}
 
-  async findAll() {
-    return await this.invoiceRepository.find();
+  async findAll(user: User) {
+    return await this.invoiceRepository.find({
+      where: { user: user },
+    });
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, user: User) {
     const invoice = await this.invoiceRepository.findOne(id, {
       relations: ['contractor', 'invoiceItems'],
+      where: { user: user },
     });
     if (!invoice) {
       throw new NotFoundException(`Invoice #${id} could not be found.`);
@@ -45,8 +49,8 @@ export class InvoicesService {
     return invoice;
   }
 
-  async create(invoiceDto: CreateInvoiceDto) {
-    const invoice = this.invoiceRepository.create(invoiceDto);
+  async create(invoiceDto: CreateInvoiceDto, user: User) {
+    const invoice = this.invoiceRepository.create({ ...invoiceDto, user });
 
     const invoiceNo =
       invoiceDto.invoiceNo ?? (await this.getNextInvoiceNumber());
@@ -55,6 +59,7 @@ export class InvoicesService {
     const contractor = await this.preloadContractor(
       contractorId,
       newContractor,
+      user,
     );
 
     const { invoiceItems, grossValue, vatValue } =
@@ -70,7 +75,7 @@ export class InvoicesService {
     });
   }
 
-  async update(id: number, invoiceDto: UpdateInvoiceDto) {
+  async update(id: number, invoiceDto: UpdateInvoiceDto, user: User) {
     const invoice = await this.invoiceRepository.preload({
       id: id,
       ...invoiceDto,
@@ -83,6 +88,7 @@ export class InvoicesService {
     const contractor = await this.preloadContractor(
       contractorId,
       newContractor,
+      user,
     );
 
     const { invoiceItems, grossValue, vatValue } =
@@ -97,14 +103,9 @@ export class InvoicesService {
     });
   }
 
-  async delete(id: number) {
-    const invoice = await this.findOne(id);
+  async delete(id: number, user: User) {
+    const invoice = await this.findOne(id, user);
     return this.invoiceRepository.remove(invoice);
-  }
-
-  async deleteAll() {
-    const invoices = await this.findAll();
-    invoices.forEach(async (inv) => await this.invoiceRepository.remove(inv));
   }
 
   async listItemCategories() {
@@ -118,8 +119,10 @@ export class InvoicesService {
     return invoice.invoiceItems;
   }
 
-  async approve(id: number, value: boolean) {
-    await this.invoiceRepository.update(id, { approved: value });
+  async approve(id: number, value: boolean, user: User) {
+    const invoice = await this.findOne(id, user);
+    invoice.approved = value;
+    await this.invoiceRepository.save(invoice);
     if (value) {
       return `Invoice #${id} approved.`;
     } else {
@@ -130,7 +133,7 @@ export class InvoicesService {
   private async getNextInvoiceNumber() {
     const invoiceNoArr = await this.invoiceRepository.find({
       select: ['invoiceNo'],
-      order: { id: 'ASC' },
+      order: { id: 'DESC' },
       take: 1,
     });
     return this.generateNextInvoiceNumber(invoiceNoArr?.[0]?.invoiceNo);
@@ -152,11 +155,12 @@ export class InvoicesService {
   private async preloadContractor(
     contractorId: number | undefined,
     newContractor: CreateContractorDto,
+    user: User,
   ) {
     if (contractorId) {
-      return await this.contractorService.findOne(contractorId);
+      return await this.contractorService.findOne(contractorId, user);
     } else if (newContractor) {
-      return await this.contractorService.create(newContractor);
+      return await this.contractorService.create(newContractor, user);
     }
   }
 

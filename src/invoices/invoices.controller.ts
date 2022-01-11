@@ -8,6 +8,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { CurrentUser } from '../auth/decorators/user.decorator';
+import { User } from '../user/entities/user.entity';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { InvoiceApproveDto } from './dto/invoice-approve.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
@@ -24,13 +26,13 @@ export class InvoicesController {
   }
 
   @Get()
-  findAll() {
-    return this.invoicesService.findAll();
+  findAll(@CurrentUser() user: User) {
+    return this.invoicesService.findAll(user);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.invoicesService.findOne(id);
+  findOne(@Param('id') id: number, @CurrentUser() user: User) {
+    return this.invoicesService.findOne(id, user);
   }
 
   @Get(':id/invoiceItems')
@@ -42,27 +44,27 @@ export class InvoicesController {
   approveInvoice(
     @Param('id') id: number,
     @Body() approveDto: InvoiceApproveDto,
+    @CurrentUser() user: User,
   ) {
-    return this.invoicesService.approve(id, approveDto.approve);
+    return this.invoicesService.approve(id, approveDto.approve, user);
   }
 
   @Post()
-  create(@Body() invoiceDto: CreateInvoiceDto) {
-    return this.invoicesService.create(invoiceDto);
+  create(@Body() invoiceDto: CreateInvoiceDto, @CurrentUser() user: User) {
+    return this.invoicesService.create(invoiceDto, user);
   }
 
   @Patch(':id')
-  update(@Param('id') id: number, @Body() invoiceDto: UpdateInvoiceDto) {
-    return this.invoicesService.update(id, invoiceDto);
+  update(
+    @Param('id') id: number,
+    @Body() invoiceDto: UpdateInvoiceDto,
+    @CurrentUser() user: User,
+  ) {
+    return this.invoicesService.update(id, invoiceDto, user);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: number) {
-    return this.invoicesService.delete(id);
-  }
-
-  @Delete()
-  deleteAll() {
-    this.invoicesService.deleteAll();
+  delete(@Param('id') id: number, @CurrentUser() user: User) {
+    return this.invoicesService.delete(id, user);
   }
 }

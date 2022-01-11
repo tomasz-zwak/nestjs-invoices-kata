@@ -8,6 +8,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { CurrentUser } from '../auth/decorators/user.decorator';
+import { User } from '../user/entities/user.entity';
 import { ContractorsService } from './contractors.service';
 import { CreateContractorDto } from './dto/create-contractor.dto';
 import { UpdateContractorDto } from './dto/update-contractor.dto';
@@ -17,8 +19,8 @@ export class ContractorsController {
   constructor(private readonly contractorsService: ContractorsService) {}
 
   @Get()
-  findAll() {
-    return this.contractorsService.findAll();
+  findAll(@CurrentUser() user: User) {
+    return this.contractorsService.findAll(user);
   }
 
   @Get('countries')
@@ -27,13 +29,16 @@ export class ContractorsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.contractorsService.findOne(id);
+  findOne(@Param('id') id: number, @CurrentUser() user: User) {
+    return this.contractorsService.findOne(id, user);
   }
 
   @Post()
-  create(@Body() contractorDto: CreateContractorDto) {
-    return this.contractorsService.create(contractorDto);
+  create(
+    @Body() contractorDto: CreateContractorDto,
+    @CurrentUser() user: User,
+  ) {
+    return this.contractorsService.create(contractorDto, user);
   }
 
   @Patch(':id')
@@ -42,7 +47,7 @@ export class ContractorsController {
   }
 
   @Delete(':id')
-  delete(@Param('id') id: number) {
-    return this.contractorsService.delete(id);
+  delete(@Param('id') id: number, @CurrentUser() user: User) {
+    return this.contractorsService.delete(id, user);
   }
 }
