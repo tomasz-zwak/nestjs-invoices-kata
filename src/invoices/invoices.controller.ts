@@ -50,8 +50,8 @@ export class InvoicesController {
   }
 
   @Get(':id/send')
-  send(@Param('id') id: number) {
-    return this.invoicesService.send(id);
+  send(@Param('id') id: number, @CurrentUser() user: User) {
+    return this.invoicesService.send(id, user);
   }
 
   @Post()

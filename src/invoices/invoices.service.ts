@@ -132,8 +132,8 @@ export class InvoicesService {
     }
   }
 
-  async send(id: number) {
-    const invoice = await this.findOne(id);
+  async send(id: number, user: User) {
+    const invoice = await this.findOne(id, user);
     if (!invoice.approved) {
       throw new BadRequestException(
         `Invoice #${id} is not approved yet, you cannot send unapproved invoices`,
@@ -145,7 +145,6 @@ export class InvoicesService {
       );
     }
 
-    const user = new User();
     await this.mailService.newInvoice(user, invoice);
   }
 
