@@ -10,11 +10,13 @@ import { User } from './entities/user.entity';
 import * as Bcrypt from 'bcryptjs';
 import { Role } from './user.type';
 import { randomUUID } from 'crypto';
+import { MailService } from '../mail/mail.service';
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly mailService: MailService,
   ) {}
 
   async findOne(email: string) {
@@ -31,7 +33,7 @@ export class UserService {
     const user = await this.createUser(createUserDto);
     user.passwordExpired = true;
     user.active = true;
-    //todo: send mail notification here
+    this.mailService.accountCreated(user);
     return await this.userRepository.save(user);
   }
 
@@ -41,14 +43,14 @@ export class UserService {
    */
   async register(createUserDto: CreateUserDto) {
     const user = await this.createUser(createUserDto);
-    user.role = Role.OWNER;
-    //todo: send mail with unique confirmation link here;
+    this.mailService.accountConfirmation(user);
     return await this.userRepository.save(user);
   }
 
   async getPasswordResetId(email: string) {
     const user = await this.findOne(email);
-    return user.passwordResetId; //send mail here
+    this.mailService.passwordReset(user);
+    return user.passwordResetId;
   }
 
   async resetPassword(password: string, passwordResetId: string) {

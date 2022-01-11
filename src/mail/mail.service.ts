@@ -7,7 +7,7 @@ import { User } from '../user/entities/user.entity';
 export class MailService {
   constructor(private mailerService: MailerService) {}
 
-  async newInvoice(user: User, invoice: Invoice) {
+  async invoiceAlert(user: User, invoice: Invoice) {
     await this.mailerService.sendMail({
       to: invoice.contractor.email,
       from: 'InvoicesApp',

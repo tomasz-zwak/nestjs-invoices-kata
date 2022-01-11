@@ -1,23 +1,18 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as _ from 'lodash';
-import { values } from 'lodash';
 import { Repository } from 'typeorm';
 import { round } from '../commons/utils/utils';
 import { ContractorsService } from '../contractors/contractors.service';
 import { CreateContractorDto } from '../contractors/dto/create-contractor.dto';
-import { Contractor } from '../contractors/entities/contractor.entity';
 import { MailService } from '../mail/mail.service';
 import { User } from '../user/entities/user.entity';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 import { InvoiceItemCategory } from './entities/invoice-item-category.entity';
-import { InvoiceItem } from './entities/invoice-item.entity';
 import { Invoice } from './entities/invoice.entity';
 import { InvoiceCalculationMethod } from './invoice.type';
 
@@ -28,8 +23,6 @@ export class InvoicesService {
     private readonly invoiceRepository: Repository<Invoice>,
     @InjectRepository(InvoiceItemCategory)
     private readonly invoiceItemCategoryRepository: Repository<InvoiceItemCategory>,
-    @InjectRepository(InvoiceItem)
-    private readonly invoiceItemRepository: Repository<InvoiceItem>,
     private readonly mailService: MailService,
     private readonly contractorService: ContractorsService,
   ) {}
@@ -126,9 +119,9 @@ export class InvoicesService {
     invoice.approved = value;
     await this.invoiceRepository.save(invoice);
     if (value) {
-      return `Invoice #${id} approved.`;
+      return `Invoice ${invoice.invoiceNo} approved.`;
     } else {
-      return `Invoice #${id} unapproved.`;
+      return `Invoice ${invoice.invoiceNo} unapproved.`;
     }
   }
 
@@ -136,16 +129,11 @@ export class InvoicesService {
     const invoice = await this.findOne(id, user);
     if (!invoice.approved) {
       throw new BadRequestException(
-        `Invoice #${id} is not approved yet, you cannot send unapproved invoices`,
-      );
-    }
-    if (!invoice.contractor.email) {
-      throw new BadRequestException(
-        `Contractor ${invoice.contractor.id} does not have an email.`,
+        `Invoice ${invoice.invoiceNo} is not approved yet, you cannot send unapproved invoices`,
       );
     }
 
-    await this.mailService.newInvoice(user, invoice);
+    await this.mailService.invoiceAlert(user, invoice);
   }
 
   private async getNextInvoiceNumber() {
