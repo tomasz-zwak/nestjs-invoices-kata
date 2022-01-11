@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { UniqueExceptionFilter } from './database/unique-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -17,6 +18,8 @@ async function bootstrap() {
       },
     }),
   );
+
+  app.useGlobalFilters(new UniqueExceptionFilter());
 
   const options = new DocumentBuilder()
     .setTitle('InvoicesApp')
