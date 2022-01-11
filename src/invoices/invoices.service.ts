@@ -141,12 +141,12 @@ export class InvoicesService {
     }
     if (!invoice.contractor.email) {
       throw new BadRequestException(
-        `Contractor ${invoice.contractor.id} does not have an eamil.`,
+        `Contractor ${invoice.contractor.id} does not have an email.`,
       );
     }
 
     const user = new User();
-    await this.mailService.sendNewInvoiceMail(user, invoice);
+    await this.mailService.newInvoice(user, invoice);
   }
 
   private async getNextInvoiceNumber() {
