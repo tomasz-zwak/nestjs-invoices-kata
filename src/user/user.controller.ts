@@ -5,15 +5,15 @@ import {
   Get,
   Post,
   Query,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Request } from 'express';
-import { AuthService } from '../auth/auth.service';
 import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { CurrentUser } from '../auth/decorators/user.decorator';
+import { RolesGuard } from '../auth/roles.guard';
 import { CreateUserDto } from './dto/create-user.dto';
+import { User } from './entities/user.entity';
 import { UserService } from './user.service';
 import { Role } from './user.type';
 
@@ -23,8 +23,8 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get('profile')
-  profile(@Req() req: Request) {
-    return req.user;
+  profile(@CurrentUser() user: User) {
+    return user;
   }
 
   @Public()

@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt } from 'passport-jwt';
 import { Strategy } from 'passport-jwt';
+import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { UserPayload } from '../user/user.type';
 
@@ -15,18 +16,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: UserPayload): Promise<UserPayload> {
+  async validate(payload: UserPayload): Promise<User> {
     let user;
     try {
       user = await this.userService.findOne(payload.email);
     } catch (error) {
       throw new UnauthorizedException('User does not exist.');
     }
-    const { email, name, role } = user;
-    return {
-      email,
-      name,
-      role,
-    };
+    return user;
   }
 }
