@@ -1,10 +1,8 @@
 import {
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PaymentMethod } from '../../invoices/invoice.type';

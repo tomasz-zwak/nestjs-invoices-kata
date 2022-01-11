@@ -49,6 +49,11 @@ export class InvoicesController {
     return this.invoicesService.approve(id, approveDto.approve, user);
   }
 
+  @Get(':id/send')
+  send(@Param('id') id: number, @CurrentUser() user: User) {
+    return this.invoicesService.send(id, user);
+  }
+
   @Post()
   create(@Body() invoiceDto: CreateInvoiceDto, @CurrentUser() user: User) {
     return this.invoicesService.create(invoiceDto, user);

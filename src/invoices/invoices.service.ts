@@ -12,6 +12,7 @@ import { round } from '../commons/utils/utils';
 import { ContractorsService } from '../contractors/contractors.service';
 import { CreateContractorDto } from '../contractors/dto/create-contractor.dto';
 import { Contractor } from '../contractors/entities/contractor.entity';
+import { MailService } from '../mail/mail.service';
 import { User } from '../user/entities/user.entity';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
@@ -29,6 +30,7 @@ export class InvoicesService {
     private readonly invoiceItemCategoryRepository: Repository<InvoiceItemCategory>,
     @InjectRepository(InvoiceItem)
     private readonly invoiceItemRepository: Repository<InvoiceItem>,
+    private readonly mailService: MailService,
     private readonly contractorService: ContractorsService,
   ) {}
 
@@ -128,6 +130,22 @@ export class InvoicesService {
     } else {
       return `Invoice #${id} unapproved.`;
     }
+  }
+
+  async send(id: number, user: User) {
+    const invoice = await this.findOne(id, user);
+    if (!invoice.approved) {
+      throw new BadRequestException(
+        `Invoice #${id} is not approved yet, you cannot send unapproved invoices`,
+      );
+    }
+    if (!invoice.contractor.email) {
+      throw new BadRequestException(
+        `Contractor ${invoice.contractor.id} does not have an email.`,
+      );
+    }
+
+    await this.mailService.newInvoice(user, invoice);
   }
 
   private async getNextInvoiceNumber() {
