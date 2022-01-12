@@ -6,8 +6,11 @@ import {
   Param,
   Patch,
   Post,
+  Res,
+  StreamableFile,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { CurrentUser } from '../auth/decorators/user.decorator';
 import { User } from '../user/entities/user.entity';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
@@ -52,6 +55,20 @@ export class InvoicesController {
   @Get(':id/send')
   send(@Param('id') id: number, @CurrentUser() user: User) {
     return this.invoicesService.send(id, user);
+  }
+
+  @Get(':id/download')
+  async download(
+    @Param('id') id: number,
+    @CurrentUser() user: User,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const pdfResponse = await this.invoicesService.download(id, user);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${pdfResponse.name}"`,
+    });
+    return new StreamableFile(pdfResponse.data);
   }
 
   @Post()
