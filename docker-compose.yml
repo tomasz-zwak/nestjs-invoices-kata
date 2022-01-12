@@ -10,8 +10,18 @@ services:
        MYSQL_DATABASE: invoicesApp
     volumes:
       - mysqldata:/var/lib/mysql
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PORT_NUMBER=6379
+    volumes:
+      - redisdata:/data
+
 volumes:
   mysqldata:
+  redisdata:
      
   # test-db:
   #   image:  postgres
