@@ -9,6 +9,9 @@ import { round } from '../commons/utils/utils';
 import { ContractorsService } from '../contractors/contractors.service';
 import { CreateContractorDto } from '../contractors/dto/create-contractor.dto';
 import { MailService } from '../mail/mail.service';
+import { PdfService } from '../pdf/pdf.service';
+import { PdfResponse, PdfTemplate } from '../pdf/pdf.type';
+import { QueueService } from '../queue/queue.service';
 import { User } from '../user/entities/user.entity';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
@@ -25,6 +28,7 @@ export class InvoicesService {
     private readonly invoiceItemCategoryRepository: Repository<InvoiceItemCategory>,
     private readonly mailService: MailService,
     private readonly contractorService: ContractorsService,
+    private readonly queueService: QueueService,
   ) {}
 
   async findAll(user: User) {
@@ -33,9 +37,9 @@ export class InvoicesService {
     });
   }
 
-  async findOne(id: number, user: User) {
+  async findOne(id: number, user: User): Promise<Invoice> {
     const invoice = await this.invoiceRepository.findOne(id, {
-      relations: ['contractor', 'invoiceItems'],
+      relations: ['contractor', 'invoiceItems', 'user'],
       where: { user: user },
     });
     if (!invoice) {
@@ -119,6 +123,7 @@ export class InvoicesService {
     invoice.approved = value;
     await this.invoiceRepository.save(invoice);
     if (value) {
+      this.generatePdf(invoice);
       return `Invoice ${invoice.invoiceNo} approved.`;
     } else {
       return `Invoice ${invoice.invoiceNo} unapproved.`;
@@ -134,6 +139,18 @@ export class InvoicesService {
     }
 
     await this.mailService.invoiceAlert(user, invoice);
+  }
+
+  async download(id: number, user: User): Promise<PdfResponse> {
+    const invoice = await this.findOne(id, user);
+    const { fileData: data, fileName: name } = invoice;
+    if (data && name) {
+      return {
+        data,
+        name,
+      };
+    }
+    throw new NotFoundException();
   }
 
   private async getNextInvoiceNumber() {
@@ -201,5 +218,16 @@ export class InvoicesService {
     );
 
     return { invoiceItems, ...invoiceTotals };
+  }
+
+  private generatePdf(invoice: Invoice) {
+    this.queueService.enqueuePdf({
+      template: PdfTemplate.INVOICE,
+      data: {
+        contractor: invoice.contractor,
+        invoice: invoice,
+        user: invoice.user,
+      },
+    });
   }
 }

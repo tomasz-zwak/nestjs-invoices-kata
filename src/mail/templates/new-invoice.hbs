@@ -14,9 +14,9 @@
     '
   >
     <h1>Nowa faktura oczekuje na płatność</h1>
-    <p>{{user.name}}
+    <p>{{user.name}} ({{user.email}})
       wystawił Ci nową fakturę na kwotę
       {{invoice.grossValue}}</p>
-    <button>Pobierz fakturę</button>
+    <a href="http://localhost:3000/invoices/{{invoice.id}}/download">Download</a>
   </body>
 </html>

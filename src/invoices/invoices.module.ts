@@ -10,6 +10,8 @@ import { InvoiceItemCategory } from './entities/invoice-item-category.entity';
 import { ContractorsService } from '../contractors/contractors.service';
 import { MailService } from '../mail/mail.service';
 import { MailModule } from '../mail/mail.module';
+import { QueueModule } from '../queue/queue.module';
+import { PdfModule } from '../pdf/pdf.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { MailModule } from '../mail/mail.module';
       Country,
     ]),
     MailModule,
+    QueueModule,
+    PdfModule,
   ],
   providers: [InvoicesService, ContractorsService, MailService],
   controllers: [InvoicesController],
