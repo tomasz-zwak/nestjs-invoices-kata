@@ -8,14 +8,15 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import * as Bcrypt from 'bcryptjs';
-import { Role } from './user.type';
 import { randomUUID } from 'crypto';
 import { MailService } from '../mail/mail.service';
+import { QueueService } from '../queue/queue.service';
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly queueService: QueueService,
     private readonly mailService: MailService,
   ) {}
 
@@ -33,7 +34,7 @@ export class UserService {
     const user = await this.createUser(createUserDto);
     user.passwordExpired = true;
     user.active = true;
-    this.mailService.accountCreated(user);
+    this.queueService.enqueueMail(this.mailService.accountCreated(user));
     return await this.userRepository.save(user);
   }
 
@@ -43,13 +44,13 @@ export class UserService {
    */
   async register(createUserDto: CreateUserDto) {
     const user = await this.createUser(createUserDto);
-    this.mailService.accountConfirmation(user);
+    this.queueService.enqueueMail(this.mailService.accountConfirmation(user));
     return await this.userRepository.save(user);
   }
 
   async getPasswordResetId(email: string) {
     const user = await this.findOne(email);
-    this.mailService.passwordReset(user);
+    this.queueService.enqueueMail(this.mailService.passwordReset(user));
     return user.passwordResetId;
   }
 

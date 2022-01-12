@@ -1,14 +1,15 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { Invoice } from '../invoices/entities/invoice.entity';
+import { MailData } from '../queue/queue.type';
 import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class MailService {
   constructor(private mailerService: MailerService) {}
 
-  async invoiceAlert(user: User, invoice: Invoice) {
-    await this.mailerService.sendMail({
+  invoiceAlert(user: User, invoice: Invoice): MailData {
+    return {
       to: invoice.contractor.email,
       from: 'InvoicesApp',
       subject: 'New Invoice',
@@ -17,36 +18,40 @@ export class MailService {
         user,
         invoice,
       },
-    });
+    };
   }
 
-  async accountConfirmation(user: User) {
-    await this.mailerService.sendMail({
+  accountConfirmation(user: User): MailData {
+    return {
       to: user.email,
       from: 'InvoicesApp',
       subject: 'Confirm your mail address',
       template: 'account-confirm.hbs',
       context: { user },
-    });
+    };
   }
 
-  async passwordReset(user: User) {
-    await this.mailerService.sendMail({
+  passwordReset(user: User): MailData {
+    return {
       to: user.email,
       from: 'InvoicesApp',
       subject: 'Reset your password',
       template: 'password-reset.hbs',
       context: { user },
-    });
+    };
   }
 
-  async accountCreated(user: User) {
-    await this.mailerService.sendMail({
+  accountCreated(user: User): MailData {
+    return {
       to: user.email,
       from: 'InvoicesApp',
       subject: 'Administrator created an account for you',
       template: 'account-create.hbs',
       context: { user },
-    });
+    };
+  }
+
+  sendMail(mailData: MailData) {
+    this.mailerService.sendMail(mailData);
   }
 }
