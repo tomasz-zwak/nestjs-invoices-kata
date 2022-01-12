@@ -17,6 +17,7 @@ import {
 import { Contractor } from '../../contractors/entities/contractor.entity';
 import { InvoiceItem } from './invoice-item.entity';
 import { defaultAccountingPeriod } from '../../commons/utils/utils';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Invoice {
@@ -85,6 +86,14 @@ export class Invoice {
 
   @Column({ default: false, nullable: false })
   approved: boolean;
+
+  @Exclude()
+  @Column({ nullable: true })
+  fileName: string;
+
+  @Exclude()
+  @Column({ nullable: true })
+  fileData: Buffer;
 
   @BeforeInsert()
   populateDates() {
