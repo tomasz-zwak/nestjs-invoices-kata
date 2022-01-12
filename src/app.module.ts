@@ -8,6 +8,7 @@ import { ContractorsModule } from './contractors/contractors.module';
 import { AuthModule } from './auth/auth.module';
 import { PdfModule } from './pdf/pdf.module';
 import { MailModule } from './mail/mail.module';
+import { QueueModule } from './queue/queue.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MailModule } from './mail/mail.module';
     AuthModule,
     PdfModule,
     MailModule,
+    QueueModule,
   ],
   controllers: [AppController],
   providers: [AppService],
