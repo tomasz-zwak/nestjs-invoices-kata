@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { Injectable, UseInterceptors } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Invoice } from '../invoices/entities/invoice.entity';
 import { QueueService } from '../queue/queue.service';
 import { MailData } from '../queue/queue.type';

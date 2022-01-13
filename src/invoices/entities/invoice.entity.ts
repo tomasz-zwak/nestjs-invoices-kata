@@ -93,7 +93,7 @@ export class Invoice {
   fileName: string;
 
   @Exclude()
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'mediumblob' })
   fileData: Buffer;
 
   @BeforeInsert()

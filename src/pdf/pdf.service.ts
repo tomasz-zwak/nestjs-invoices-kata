@@ -11,7 +11,7 @@ import { PdfResponse, PdfTemplate, PdfTemplateData } from './pdf.type';
 export class PdfService {
   constructor(private readonly queueService: QueueService) {}
 
-  preparePdf(pdfData: PdfData){
+  preparePdf(pdfData: PdfData) {
     return this.pdfHandler(pdfData);
   }
 
@@ -25,9 +25,9 @@ export class PdfService {
     const template = Handlebars.compile(templateRaw);
     const html = template({ ...data });
 
-    const browser = await Puppeteer.launch();
+    const browser = await Puppeteer.launch({ headless: true });
     const page = await browser.newPage();
-    page.setContent(html);
+    await page.setContent(html);
     const pdf = await page.pdf({ format: 'a4' });
     await browser.close();
 
