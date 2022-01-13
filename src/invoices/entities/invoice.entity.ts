@@ -81,6 +81,7 @@ export class Invoice {
   @ManyToOne(() => Contractor, (contractor) => contractor.invoices)
   contractor: Contractor;
 
+  @Exclude()
   @ManyToOne(() => User, (user) => user.invoices, { nullable: true })
   user: User;
 

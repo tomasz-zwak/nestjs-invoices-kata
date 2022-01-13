@@ -9,7 +9,6 @@ import { round } from '../commons/utils/utils';
 import { ContractorsService } from '../contractors/contractors.service';
 import { CreateContractorDto } from '../contractors/dto/create-contractor.dto';
 import { MailService } from '../mail/mail.service';
-import { PdfService } from '../pdf/pdf.service';
 import { PdfResponse, PdfTemplate } from '../pdf/pdf.type';
 import { QueueService } from '../queue/queue.service';
 import { User } from '../user/entities/user.entity';
