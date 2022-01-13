@@ -18,4 +18,8 @@ export class CreateUserDto {
   @ApiProperty()
   @IsEnum(Role)
   role: Role;
+
+  @ApiProperty()
+  @IsString()
+  accountNumber: string;
 }

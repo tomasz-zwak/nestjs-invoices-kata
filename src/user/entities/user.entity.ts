@@ -44,4 +44,7 @@ export class User {
 
   @OneToMany(() => Contractor, (contractor) => contractor.user)
   contractors: Contractor[];
+
+  @Column()
+  accountNumber: string;
 }
