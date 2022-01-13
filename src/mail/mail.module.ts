@@ -5,6 +5,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailProcessor } from './mail.processor';
+import { QueueModule } from '../queue/queue.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { MailProcessor } from './mail.processor';
         }),
       ],
     }),
+    QueueModule,
   ],
   providers: [MailService, ConfigService, MailProcessor],
   exports: [MailService],

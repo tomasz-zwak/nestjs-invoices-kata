@@ -3,10 +3,18 @@ import { readFileSync } from 'fs';
 import Handlebars from 'handlebars';
 import { join } from 'path';
 import * as Puppeteer from 'puppeteer';
+import { QueueService } from '../queue/queue.service';
+import { PdfData } from '../queue/queue.type';
 import { PdfResponse, PdfTemplate, PdfTemplateData } from './pdf.type';
 
 @Injectable()
 export class PdfService {
+  constructor(private readonly queueService: QueueService) {}
+
+  preparePdf(pdfData: PdfData){
+    return this.pdfHandler(pdfData);
+  }
+
   async generatePdf(
     pdfTemplate: PdfTemplate,
     data: PdfTemplateData,
@@ -28,5 +36,12 @@ export class PdfService {
 
   private getPath(templateName: string) {
     return join(__dirname, 'templates', `${templateName}.template.hbs`);
+  }
+
+  private pdfHandler(data: PdfData) {
+    return {
+      data: () => data,
+      generate: () => this.queueService.enqueuePdf(data),
+    };
   }
 }

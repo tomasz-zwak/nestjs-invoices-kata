@@ -10,13 +10,11 @@ import { User } from './entities/user.entity';
 import * as Bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
 import { MailService } from '../mail/mail.service';
-import { QueueService } from '../queue/queue.service';
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly queueService: QueueService,
     private readonly mailService: MailService,
   ) {}
 
@@ -34,7 +32,7 @@ export class UserService {
     const user = await this.createUser(createUserDto);
     user.passwordExpired = true;
     user.active = true;
-    this.queueService.enqueueMail(this.mailService.accountCreated(user));
+    this.mailService.accountCreated(user).send();
     return await this.userRepository.save(user);
   }
 
@@ -44,13 +42,13 @@ export class UserService {
    */
   async register(createUserDto: CreateUserDto) {
     const user = await this.createUser(createUserDto);
-    this.queueService.enqueueMail(this.mailService.accountConfirmation(user));
+    this.mailService.accountConfirmation(user).send();
     return await this.userRepository.save(user);
   }
 
   async getPasswordResetId(email: string) {
     const user = await this.findOne(email);
-    this.queueService.enqueueMail(this.mailService.passwordReset(user));
+    this.mailService.passwordReset(user).send();
     return user.passwordResetId;
   }
 
