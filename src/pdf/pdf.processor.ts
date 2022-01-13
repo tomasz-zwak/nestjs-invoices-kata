@@ -5,7 +5,6 @@ import { Exception } from 'handlebars';
 import { Repository } from 'typeorm';
 import { Invoice } from '../invoices/entities/invoice.entity';
 import { MailService } from '../mail/mail.service';
-import { QueueService } from '../queue/queue.service';
 import { PdfData } from '../queue/queue.type';
 import { PdfService } from './pdf.service';
 
@@ -16,7 +15,6 @@ export class PdfProcessor {
     private readonly invoiceRepository: Repository<Invoice>,
     private readonly pdfService: PdfService,
     private readonly mailService: MailService,
-    private readonly queueService: QueueService,
   ) {}
   @Process()
   async processPdf(job: Job<PdfData>) {
@@ -35,7 +33,7 @@ export class PdfProcessor {
         fileData: pdf.data,
       },
     );
-    const mailData = this.mailService.invoiceAlert(user, invoice);
-    this.queueService.enqueueMail(mailData);
+    delete invoice.fileData;
+    this.mailService.invoiceAlert(user, invoice).send();
   }
 }
