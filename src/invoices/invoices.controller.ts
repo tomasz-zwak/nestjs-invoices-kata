@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -8,6 +9,7 @@ import {
   Post,
   Res,
   StreamableFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -18,6 +20,7 @@ import { InvoiceApproveDto } from './dto/invoice-approve.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 import { InvoicesService } from './invoices.service';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('invoices')
 @Controller('invoices')
 export class InvoicesController {

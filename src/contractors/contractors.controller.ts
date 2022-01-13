@@ -1,11 +1,13 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
   Param,
   Patch,
   Post,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/decorators/user.decorator';
@@ -13,6 +15,8 @@ import { User } from '../user/entities/user.entity';
 import { ContractorsService } from './contractors.service';
 import { CreateContractorDto } from './dto/create-contractor.dto';
 import { UpdateContractorDto } from './dto/update-contractor.dto';
+
+@UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('contractors')
 @Controller('contractors')
 export class ContractorsController {
