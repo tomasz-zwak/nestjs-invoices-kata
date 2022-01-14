@@ -17,7 +17,7 @@ export class MailService {
       to: invoice.contractor.email,
       from: 'InvoicesApp',
       subject: 'New Invoice',
-      template: 'new-invoice.hbs',
+      template: 'new-invoice',
       context: {
         user,
         invoice,
@@ -31,7 +31,7 @@ export class MailService {
       to: user.email,
       from: 'InvoicesApp',
       subject: 'Confirm your mail address',
-      template: 'account-confirm.hbs',
+      template: 'account-confirm',
       context: { user },
     };
     return this.mailHandlers(data);
@@ -42,7 +42,7 @@ export class MailService {
       to: user.email,
       from: 'InvoicesApp',
       subject: 'Reset your password',
-      template: 'password-reset.hbs',
+      template: 'password-reset',
       context: { user },
     };
     return this.mailHandlers(data);
@@ -53,7 +53,7 @@ export class MailService {
       to: user.email,
       from: 'InvoicesApp',
       subject: 'Administrator created an account for you',
-      template: 'account-create.hbs',
+      template: 'account-create',
       context: { user },
     };
     return this.mailHandlers(data);

@@ -11,7 +11,7 @@ import { MjmlAdapter } from './mjml.adapter';
 @Module({
   imports: [
     MailerModule.forRootAsync({
-      useFactory: async (config: ConfigService, mailAdapter: MjmlAdapter) => ({
+      useFactory: async (config: ConfigService) => ({
         transport: {
           host: config.get('MAIL_HOST'),
           port: config.get('MAIL_PORT'),
@@ -25,7 +25,7 @@ import { MjmlAdapter } from './mjml.adapter';
         },
         template: {
           dir: join(__dirname, 'templates'),
-          adapter: new HandlebarsAdapter(),
+          adapter: new MjmlAdapter(),
           options: {
             strict: true,
           },
