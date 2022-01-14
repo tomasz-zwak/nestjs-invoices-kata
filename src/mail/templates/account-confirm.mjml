@@ -8,8 +8,8 @@
     <mj-section background-color="#009fe3" padding-bottom="20px" padding-top="20px">
       <mj-column vertical-align="middle" width="100%">
         <mj-text align="left" color="#ffffff" font-size="22px" font-family="open Sans Helvetica, Arial, sans-serif" padding-left="25px" padding-right="25px"><span style="color:#FEEB35">Dear {{user.name}}</span><br /></mj-text>
-        <mj-text align="left" color="#ffffff" font-size="15px" font-family="open Sans Helvetica, Arial, sans-serif" padding-left="25px" padding-right="25px">An administrator just created an account for you. Please reset your password before you log in.</mj-text>
-        <mj-button href="http://localhost:3000/user/resetPassword?passwordResetId={{user.passwordResetId}}" align="center" font-size="22px" font-weight="bold" background-color="#ffffff" border-radius="10px" color="#1AA0E1" font-family="open Sans Helvetica, Arial, sans-serif">Reset password</mj-button>
+        <mj-text align="left" color="#ffffff" font-size="15px" font-family="open Sans Helvetica, Arial, sans-serif" padding-left="25px" padding-right="25px">Your account was created, please confirm your email by clicking on the button below to be able to log in.</mj-text>
+        <mj-button href="http://localhost:3000/user?confirmationId={{user.confirmationId}}" align="center" font-size="22px" font-weight="bold" background-color="#ffffff" border-radius="10px" color="#1AA0E1" font-family="open Sans Helvetica, Arial, sans-serif">Confirm your email</mj-button>
         <mj-text align="left" color="#ffffff" font-size="15px" font-family="open Sans Helvetica, Arial, sans-serif" padding-left="25px" padding-right="25px">Thanks.</mj-text>
       </mj-column>
     </mj-section>
