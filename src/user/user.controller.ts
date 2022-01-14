@@ -14,7 +14,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { UserService } from './user.service';
 import { Role } from './user.type';
-
 @ApiTags('user')
 @Controller('user')
 export class UserController {

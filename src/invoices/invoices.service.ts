@@ -220,6 +220,7 @@ export class InvoicesService {
   }
 
   private generatePdf(invoice: Invoice) {
+    invoice.fileData = null; //for bullboard's sake
     this.pdfService
       .preparePdf({
         template: PdfTemplate.INVOICE,
