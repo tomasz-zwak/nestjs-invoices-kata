@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { readFileSync } from 'fs';
 import Handlebars from 'handlebars';
 import { join } from 'path';
-import * as Puppeteer from 'puppeteer';
+import Puppeteer from 'puppeteer';
 import { QueueService } from '../queue/queue.service';
 import { PdfData } from '../queue/queue.type';
 import { PdfResponse, PdfTemplate, PdfTemplateData } from './pdf.type';
