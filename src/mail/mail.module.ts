@@ -6,11 +6,12 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailProcessor } from './mail.processor';
 import { QueueModule } from '../queue/queue.module';
+import { MjmlAdapter } from './mjml.adapter';
 
 @Module({
   imports: [
     MailerModule.forRootAsync({
-      useFactory: async (config: ConfigService) => ({
+      useFactory: async (config: ConfigService, mailAdapter: MjmlAdapter) => ({
         transport: {
           host: config.get('MAIL_HOST'),
           port: config.get('MAIL_PORT'),
