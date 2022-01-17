@@ -42,8 +42,9 @@ export class UserService {
    */
   async register(createUserDto: CreateUserDto) {
     const user = await this.createUser(createUserDto);
+    const newUser = await this.userRepository.save(user);
     this.mailService.accountConfirmation(user).send();
-    return await this.userRepository.save(user);
+    return newUser;
   }
 
   async getPasswordResetId(email: string) {
