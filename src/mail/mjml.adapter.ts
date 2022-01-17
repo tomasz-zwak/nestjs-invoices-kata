@@ -15,7 +15,7 @@ type Mail = {
     html: string;
   };
 };
-
+@Injectable()
 export class MjmlAdapter implements TemplateAdapter {
   compile(
     mail: Mail,
