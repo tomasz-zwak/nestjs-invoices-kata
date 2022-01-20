@@ -1,3 +1,5 @@
+import { registerEnumType } from '@nestjs/graphql';
+
 export enum Currency {
   PLN = 'PLN',
   USD = 'USD',
@@ -27,3 +29,10 @@ export enum MeasureUnit {
   HOUR = 'h',
   NOT_APPLICABLE = 'not applicable',
 }
+
+registerEnumType(Currency, { name: 'Currency' });
+registerEnumType(InvoiceCalculationMethod, {
+  name: 'InvoiceCalculationMethod',
+});
+registerEnumType(PaymentMethod, { name: 'PaymentMethod' });
+registerEnumType(MeasureUnit, { name: 'MeasureUnit' });

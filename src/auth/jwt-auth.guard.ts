@@ -1,6 +1,8 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { IS_PUBLIC_KEY } from './decorators/public.decorator';
 
@@ -8,6 +10,13 @@ import { IS_PUBLIC_KEY } from './decorators/public.decorator';
 export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(private readonly reflector: Reflector) {
     super();
+  }
+
+  getRequest(context: ExecutionContext) {
+    const req = context.switchToHttp().getRequest<Request>();
+    if (req) return req;
+    const gqlCtx = GqlExecutionContext.create(context);
+    return gqlCtx.getContext().req;
   }
 
   canActivate(

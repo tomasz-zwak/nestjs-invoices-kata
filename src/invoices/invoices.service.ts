@@ -138,6 +138,7 @@ export class InvoicesService {
     }
 
     this.mailService.invoiceAlert(user, invoice).send();
+    return id;
   }
 
   async download(id: number, user: User): Promise<PdfResponse> {

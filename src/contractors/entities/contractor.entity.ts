@@ -9,15 +9,20 @@ import { PaymentMethod } from '../../invoices/invoice.type';
 import { Country } from '../../invoices/entities/country.entity';
 import { Invoice } from '../../invoices/entities/invoice.entity';
 import { User } from '../../user/entities/user.entity';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 
 @Entity()
+@ObjectType()
 export class Contractor {
+  @Field(() => ID)
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Field()
   @Column({ nullable: false })
   privatePerson: boolean;
 
+  @Field(() => [Invoice])
   @OneToMany(() => Invoice, (invoice) => invoice.contractor, {
     nullable: true,
   })
