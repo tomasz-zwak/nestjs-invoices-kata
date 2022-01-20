@@ -13,10 +13,16 @@ import { PdfService } from '../pdf/pdf.service';
 import { PdfResponse, PdfTemplate } from '../pdf/pdf.type';
 import { User } from '../user/entities/user.entity';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
-import { UpdateInvoiceDto } from './dto/update-invoice.dto';
+import {
+  UpdateInvoiceDto,
+  UpdateInvoiceDtoGql,
+} from './dto/update-invoice.dto';
 import { InvoiceItemCategory } from './entities/invoice-item-category.entity';
 import { Invoice } from './entities/invoice.entity';
-import { InvoiceCalculationMethod } from './invoice.type';
+import {
+  InvoiceCalculationMethod,
+  InvoiceCalculationResult,
+} from './invoice.type';
 
 @Injectable()
 export class InvoicesService {
@@ -73,11 +79,17 @@ export class InvoicesService {
     });
   }
 
-  async update(id: number, invoiceDto: UpdateInvoiceDto, user: User) {
+  async update(
+    id: number,
+    invoiceDto: UpdateInvoiceDto | UpdateInvoiceDtoGql,
+    user: User,
+  ) {
     const invoice = await this.invoiceRepository.preload({
       id: id,
-      ...invoiceDto,
     });
+    console.log(typeof id, invoiceDto);
+    if (!invoice)
+      throw new NotFoundException(`Invoice #${id} could not be found.`);
     if (invoice.approved) {
       throw new BadRequestException('Cannot edit already approved invoices.');
     }
@@ -187,8 +199,14 @@ export class InvoicesService {
     }
   }
 
-  private calculateInvoice(invoice: Invoice) {
+  private calculateInvoice(invoice: Invoice): InvoiceCalculationResult {
     const invoiceItems = invoice.invoiceItems;
+    if (!invoiceItems)
+      return {
+        vatValue: undefined,
+        grossValue: undefined,
+        invoiceItems: undefined,
+      };
     const calculationMethod = invoice.invoiceCalculationMethod;
     invoiceItems.forEach((item) => {
       const { amount, price, discount, vatRate } = item;

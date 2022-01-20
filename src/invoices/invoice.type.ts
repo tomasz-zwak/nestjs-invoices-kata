@@ -1,4 +1,5 @@
 import { registerEnumType } from '@nestjs/graphql';
+import { Invoice } from './entities/invoice.entity';
 
 export enum Currency {
   PLN = 'PLN',
@@ -36,3 +37,8 @@ registerEnumType(InvoiceCalculationMethod, {
 });
 registerEnumType(PaymentMethod, { name: 'PaymentMethod' });
 registerEnumType(MeasureUnit, { name: 'MeasureUnit' });
+
+export type InvoiceCalculationResult = Pick<
+  Invoice,
+  'vatValue' | 'grossValue' | 'invoiceItems'
+>;
