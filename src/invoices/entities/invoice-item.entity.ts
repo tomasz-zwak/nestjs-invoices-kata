@@ -1,10 +1,12 @@
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { MeasureUnit } from '../invoice.type';
 import { InvoiceItemCategory } from './invoice-item-category.entity';
 import { Invoice } from './invoice.entity';
-
+@ObjectType()
 @Entity()
 export class InvoiceItem {
+  @Field(() => ID)
   @PrimaryGeneratedColumn()
   id: number;
 

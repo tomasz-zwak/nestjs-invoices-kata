@@ -10,6 +10,7 @@ import { InvoiceItemCategory } from './entities/invoice-item-category.entity';
 import { ContractorsService } from '../contractors/contractors.service';
 import { MailModule } from '../mail/mail.module';
 import { PdfModule } from '../pdf/pdf.module';
+import { InvoicesResolver } from './invoices.resolver';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { PdfModule } from '../pdf/pdf.module';
     MailModule,
     PdfModule,
   ],
-  providers: [InvoicesService, ContractorsService],
+  providers: [InvoicesService, ContractorsService, InvoicesResolver],
   controllers: [InvoicesController],
+  exports: [InvoicesResolver],
 })
 export class InvoicesModule {}

@@ -9,6 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { PdfModule } from './pdf/pdf.module';
 import { MailModule } from './mail/mail.module';
 import { QueueModule } from './queue/queue.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 
 @Module({
   imports: [
@@ -20,6 +22,12 @@ import { QueueModule } from './queue/queue.module';
     PdfModule,
     MailModule,
     QueueModule,
+    GraphQLModule.forRoot({
+      autoSchemaFile: true,
+      sortSchema: true,
+      playground: false,
+      plugins: [ApolloServerPluginLandingPageLocalDefault()],
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,3 +1,4 @@
+import { Field, Float, InputType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
@@ -15,61 +16,74 @@ import { CreateContractorDto } from '../../contractors/dto/create-contractor.dto
 import { Currency, InvoiceCalculationMethod } from '../invoice.type';
 import { InvoiceItemDto } from './invoice-item.dto';
 
+@InputType()
 export class CreateInvoiceDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
+  @Field({ nullable: true })
   invoiceNo?: string;
 
   @ApiProperty()
   @IsOptional()
   @IsDate()
+  @Field(() => Date, { nullable: true })
   issuedAt?: Date; //if not provided same as createdAt
 
   @ApiProperty()
   @IsOptional()
   @IsDate()
+  @Field(() => Date, { nullable: true })
   saleDate?: Date; //if not provided same as createdAt
 
   @ApiProperty()
   @IsDate()
   @IsOptional()
-  accountingPeriod: Date; //if not provided same as current month
+  @Field(() => Date, { nullable: true })
+  accountingPeriod?: Date; //if not provided same as current month
 
   @ApiProperty({
     description: getEnumApiOpts(InvoiceCalculationMethod),
     default: InvoiceCalculationMethod.NET,
   })
   @IsEnum(InvoiceCalculationMethod)
+  @Field(() => InvoiceCalculationMethod)
   invoiceCalculationMethod: InvoiceCalculationMethod;
 
   @ApiProperty({ description: getEnumApiOpts(Currency), default: Currency.PLN })
   @IsEnum(Currency)
+  @Field(() => Currency)
   currency: Currency;
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
+  @Field({ nullable: true })
   comment?: string;
 
   @ApiProperty()
   @IsDate()
   @IsOptional()
-  paymentDeadline: Date;
+  @Field(() => Date, { nullable: true })
+  paymentDeadline?: Date;
 
   @ApiProperty()
   @IsNumber()
   @IsOptional()
+  @Field(() => Float, { nullable: true })
   paidAmount?: number;
 
   @ApiProperty()
   @IsDate()
   @IsOptional()
+  @Field({ nullable: true })
   paidDate?: Date;
 
   @ApiProperty({ type: [InvoiceItemDto] })
   @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => InvoiceItemDto)
+  @Field(() => [InvoiceItemDto])
   invoiceItems: InvoiceItemDto[];
 
   @ApiProperty({
@@ -80,6 +94,7 @@ export class CreateInvoiceDto {
   @RequireContractorIdOrNew('newContractor', {
     message: 'Contractor ID or new contractor object required',
   })
+  @Field({ nullable: true })
   contractorId?: number;
 
   @ApiProperty({
@@ -87,10 +102,11 @@ export class CreateInvoiceDto {
       'Provide if new contractor should be created for this invoice. Skipped if contractorID is provided.',
     type: CreateContractorDto,
   })
-  @ValidateNested({ each: true })
+  @ValidateNested()
   @RequireContractorIdOrNew('contractorId', {
     message: 'Contractor ID or new contractor object required',
   })
   @Type(() => CreateContractorDto)
+  @Field(() => CreateContractorDto, { nullable: true })
   newContractor?: CreateContractorDto;
 }
