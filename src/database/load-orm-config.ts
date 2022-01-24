@@ -1,5 +1,6 @@
 import { ConfigType } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { logger } from 'handlebars';
 import { DatabaseConfig } from './database.config';
 
 export async function loadOrmConfig(
@@ -14,6 +15,6 @@ export async function loadOrmConfig(
     database: databaseConfig.database,
     synchronize: true,
     autoLoadEntities: true,
-    logging: true,
+    logging: databaseConfig.logging,
   };
 }

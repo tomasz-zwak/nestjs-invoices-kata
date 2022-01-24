@@ -9,4 +9,5 @@ export const DatabaseConfig = registerAs('database', () => ({
   database: process.env.DATABASE_NAME,
   autoLoadEntities: true,
   synchronize: true,
+  logging: process.env.DATABASE_LOGGING === 'true',
 }));
