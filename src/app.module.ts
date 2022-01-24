@@ -11,6 +11,7 @@ import { MailModule } from './mail/mail.module';
 import { QueueModule } from './queue/queue.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -27,6 +28,9 @@ import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
       sortSchema: true,
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
+    }),
+    ConfigModule.forRoot({
+      envFilePath: ['.env.test', '.env'],
     }),
   ],
   controllers: [AppController],

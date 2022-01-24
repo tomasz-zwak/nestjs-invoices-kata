@@ -14,9 +14,6 @@ import { loadOrmConfig } from './load-orm-config';
       useFactory: async (databaseConfig: ConfigType<typeof DatabaseConfig>) =>
         loadOrmConfig(databaseConfig),
     }),
-    ConfigModule.forRoot({
-      envFilePath: ['.env.mysql', '.env.postgres'],
-    }),
   ],
   providers: [DatabaseService],
   exports: [DatabaseService],

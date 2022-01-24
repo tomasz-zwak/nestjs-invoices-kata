@@ -5,21 +5,23 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
-import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { AuthController } from './auth.controller';
+import { ConfigModule, ConfigType } from '@nestjs/config';
+import { AuthConfig } from './auth.config';
 
 @Module({
   imports: [
     UserModule,
     PassportModule,
-    ConfigModule.forRoot({
-      envFilePath: ['.env.auth'],
-    }),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '6000s' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule.forFeature(AuthConfig)],
+      inject: [AuthConfig.KEY],
+      useFactory: ({ secret, signOptions }: ConfigType<typeof AuthConfig>) => ({
+        secret,
+        signOptions,
+      }),
     }),
   ],
   providers: [
@@ -27,7 +29,6 @@ import { AuthController } from './auth.controller';
     LocalStrategy,
     JwtStrategy,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
-    // { provide: APP_GUARD, useClass: RolesGuard },
   ],
   exports: [AuthService],
   controllers: [AuthController],

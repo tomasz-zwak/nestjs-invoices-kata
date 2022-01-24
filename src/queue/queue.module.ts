@@ -1,18 +1,21 @@
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigType } from '@nestjs/config';
+import { queue } from 'rxjs';
+import { QueueConfig } from './queue.config';
 import { QueueService } from './queue.service';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      envFilePath: ['.env.queue'],
-    }),
-    BullModule.forRoot({
-      redis: {
-        host: process.env.BULL_HOST,
-        port: +process.env.BULL_PORT,
-      },
+    BullModule.forRootAsync({
+      imports: [ConfigModule.forFeature(QueueConfig)],
+      inject: [QueueConfig.KEY],
+      useFactory: (queueConfig: ConfigType<typeof QueueConfig>) => ({
+        redis: {
+          host: queueConfig.host,
+          port: queueConfig.port,
+        },
+      }),
     }),
     BullModule.registerQueue({
       name: 'mail',

@@ -14,5 +14,6 @@ export async function loadOrmConfig(
     database: databaseConfig.database,
     synchronize: true,
     autoLoadEntities: true,
+    logging: true,
   };
 }
