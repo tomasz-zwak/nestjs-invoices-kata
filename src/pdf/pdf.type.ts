@@ -1,10 +1,10 @@
-import { Contractor } from '../contractors/entities/contractor.entity';
-import { Invoice } from '../invoices/entities/invoice.entity';
+import { ContractorTemplateData } from '../contractors/contractor.type';
+import { InvoiceTemplateData } from '../invoices/invoice.type';
 import { User } from '../user/entities/user.entity';
 
 export type PdfTemplateData = {
-  invoice: Invoice;
-  contractor: Contractor;
+  invoice: InvoiceTemplateData;
+  contractor: ContractorTemplateData;
   user: User;
 };
 

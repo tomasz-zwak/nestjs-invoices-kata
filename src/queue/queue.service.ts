@@ -1,7 +1,8 @@
+import { ISendMailOptions } from '@nestjs-modules/mailer';
 import { InjectQueue } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
-import { MailData, PdfData } from './queue.type';
+import { PdfData } from './queue.type';
 
 @Injectable()
 export class QueueService {
@@ -10,7 +11,7 @@ export class QueueService {
     @InjectQueue('pdf') private readonly pdfQueue: Queue,
   ) {}
 
-  enqueueMail(mailData: MailData) {
+  enqueueMail(mailData: ISendMailOptions) {
     this.mailQueue.add(mailData);
   }
 

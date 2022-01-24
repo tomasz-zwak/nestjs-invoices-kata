@@ -10,6 +10,7 @@ import { Country } from '../../invoices/entities/country.entity';
 import { Invoice } from '../../invoices/entities/invoice.entity';
 import { User } from '../../user/entities/user.entity';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { defaultPaymentDeadline } from '../../commons/utils/utils';
 
 @Entity()
 @ObjectType()
@@ -52,7 +53,7 @@ export class Contractor {
   @Column({ default: PaymentMethod.CARD, type: 'enum', enum: PaymentMethod })
   paymentMethod: PaymentMethod;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'date', default: defaultPaymentDeadline() })
   defaultPaymentDeadline: Date;
 
   @Column()

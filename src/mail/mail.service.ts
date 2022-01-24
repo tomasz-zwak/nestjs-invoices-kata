@@ -1,9 +1,10 @@
-import { MailerService } from '@nestjs-modules/mailer';
+import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import { Invoice } from '../invoices/entities/invoice.entity';
 import { QueueService } from '../queue/queue.service';
-import { MailData } from '../queue/queue.type';
-import { User } from '../user/entities/user.entity';
+import {
+  MailAlertTemplateData,
+  MailUserAccountTemplateData,
+} from './mail.type';
 
 @Injectable()
 export class MailService {
@@ -12,21 +13,22 @@ export class MailService {
     private readonly queueService: QueueService,
   ) {}
 
-  invoiceAlert(user: User, invoice: Invoice) {
+  invoiceAlert(mailData: MailAlertTemplateData) {
     const data = {
-      to: invoice.contractor.email,
+      to: mailData.contractor.email,
       from: 'InvoicesApp',
       subject: 'New Invoice',
       template: 'new-invoice',
       context: {
-        user,
-        invoice,
+        user: mailData.user,
+        invoice: mailData.invoice,
       },
     };
     return this.mailHandlers(data);
   }
 
-  accountConfirmation(user: User) {
+  accountConfirmation(mailData: MailUserAccountTemplateData) {
+    const { user } = mailData;
     const data = {
       to: user.email,
       from: 'InvoicesApp',
@@ -37,7 +39,8 @@ export class MailService {
     return this.mailHandlers(data);
   }
 
-  passwordReset(user: User) {
+  passwordReset(mailData: MailUserAccountTemplateData) {
+    const { user } = mailData;
     const data = {
       to: user.email,
       from: 'InvoicesApp',
@@ -48,7 +51,8 @@ export class MailService {
     return this.mailHandlers(data);
   }
 
-  accountCreated(user: User) {
+  accountCreated(mailData: MailUserAccountTemplateData) {
+    const { user } = mailData;
     const data = {
       to: user.email,
       from: 'InvoicesApp',
@@ -59,11 +63,11 @@ export class MailService {
     return this.mailHandlers(data);
   }
 
-  sendMail(mailData: MailData) {
+  sendMail(mailData: ISendMailOptions) {
     this.mailerService.sendMail(mailData);
   }
 
-  private mailHandlers(data: MailData) {
+  private mailHandlers(data: ISendMailOptions) {
     return {
       data: () => data,
       send: () => {

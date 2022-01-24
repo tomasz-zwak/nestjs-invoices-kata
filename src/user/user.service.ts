@@ -32,7 +32,7 @@ export class UserService {
     const user = await this.createUser(createUserDto);
     user.passwordExpired = true;
     user.active = true;
-    this.mailService.accountCreated(user).send();
+    this.mailService.accountCreated({ user }).send();
     return await this.userRepository.save(user);
   }
 
@@ -43,13 +43,13 @@ export class UserService {
   async register(createUserDto: CreateUserDto) {
     const user = await this.createUser(createUserDto);
     const newUser = await this.userRepository.save(user);
-    this.mailService.accountConfirmation(user).send();
+    this.mailService.accountConfirmation({ user }).send();
     return newUser;
   }
 
   async getPasswordResetId(email: string) {
     const user = await this.findOne(email);
-    this.mailService.passwordReset(user).send();
+    this.mailService.passwordReset({ user }).send();
     return user.passwordResetId;
   }
 

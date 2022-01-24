@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Invoice } from '../invoices/entities/invoice.entity';
 import { MailModule } from '../mail/mail.module';
 import { QueueModule } from '../queue/queue.module';
-import { QueueService } from '../queue/queue.service';
 import { PdfProcessor } from './pdf.processor';
 import { PdfService } from './pdf.service';
 

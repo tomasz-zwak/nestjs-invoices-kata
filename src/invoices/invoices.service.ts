@@ -86,6 +86,7 @@ export class InvoicesService {
   ) {
     const invoice = await this.invoiceRepository.preload({
       id: id,
+      ...invoiceDto,
     });
     console.log(typeof id, invoiceDto);
     if (!invoice)
@@ -149,7 +150,13 @@ export class InvoicesService {
       );
     }
 
-    this.mailService.invoiceAlert(user, invoice).send();
+    this.mailService
+      .invoiceAlert({
+        user,
+        invoice,
+        contractor: invoice.contractor,
+      })
+      .send();
     return id;
   }
 

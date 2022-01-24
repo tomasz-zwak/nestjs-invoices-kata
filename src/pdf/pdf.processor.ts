@@ -33,7 +33,12 @@ export class PdfProcessor {
         fileData: pdf.data,
       },
     );
-    delete invoice.fileData;
-    this.mailService.invoiceAlert(user, invoice).send();
+    this.mailService
+      .invoiceAlert({
+        invoice,
+        contractor,
+        user,
+      })
+      .send();
   }
 }

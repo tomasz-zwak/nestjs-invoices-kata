@@ -55,16 +55,17 @@ export class InvoicesResolver {
 
   @Mutation(() => Invoice)
   updateInvoice(
-    @Args({ name: 'invoiceId', type: () => Int }) id: number,
+    @Args({ name: 'invoiceId', type: () => ID }) id: number,
     @Args('invoice') invoiceDto: UpdateInvoiceDtoGql,
     @CurrentUser() user: User,
   ) {
+    console.log('id', id);
     return this.invoicesService.update(id, invoiceDto, user);
   }
 
   @Mutation(() => Invoice)
   async deleteInvoice(
-    @Args({ name: 'invoiceId', type: () => Int }) id: number,
+    @Args({ name: 'invoiceId', type: () => ID }) id: number,
     @CurrentUser() user: User,
   ) {
     const invoice = await this.invoicesService.delete(id, user);
@@ -75,7 +76,7 @@ export class InvoicesResolver {
   @UseInterceptors(InvoiceDownloadInterceptor)
   @Query(() => InvoicePdfMetadata)
   download(
-    @Args({ name: 'invoiceId', type: () => Int }) id: number,
+    @Args({ name: 'invoiceId', type: () => ID }) id: number,
   ): InvoicePdfMetadata {
     return { id };
   }

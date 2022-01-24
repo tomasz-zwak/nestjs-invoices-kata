@@ -6,10 +6,14 @@ import {
   IsEmail,
   IsEnum,
   IsNumber,
+  IsOptional,
   IsString,
   NotEquals,
 } from 'class-validator';
-import { getEnumApiOpts } from '../../commons/utils/utils';
+import {
+  defaultPaymentDeadline,
+  getEnumApiOpts,
+} from '../../commons/utils/utils';
 import { PaymentMethod } from '../../invoices/invoice.type';
 
 @InputType()
@@ -63,8 +67,11 @@ export class CreateContractorDto {
   @Field(() => PaymentMethod)
   paymentMethod: PaymentMethod;
 
-  @ApiProperty()
+  @ApiProperty({
+    default: defaultPaymentDeadline(),
+  })
   @IsDate()
+  @IsOptional()
   @Field(() => Date)
   defaultPaymentDeadline: Date;
 

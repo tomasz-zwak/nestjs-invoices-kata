@@ -1,3 +1,5 @@
+import { User } from './entities/user.entity';
+
 export enum Role {
   OWNER = 'owner',
   ACCOUNTANT = 'accountant',
@@ -9,3 +11,5 @@ export type UserPayload = {
   email: string;
   role: Role;
 };
+
+export type UserTemplateData = Pick<User, 'accountNumber' | 'email'>;

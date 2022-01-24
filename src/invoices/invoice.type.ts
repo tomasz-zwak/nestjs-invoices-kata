@@ -1,6 +1,16 @@
 import { registerEnumType } from '@nestjs/graphql';
 import { Invoice } from './entities/invoice.entity';
 
+export type InvoiceTemplateData = Pick<
+  Invoice,
+  | 'id'
+  | 'createdAt'
+  | 'invoiceNo'
+  | 'invoiceItems'
+  | 'paymentDeadline'
+  | 'grossValue'
+>;
+
 export enum Currency {
   PLN = 'PLN',
   USD = 'USD',
