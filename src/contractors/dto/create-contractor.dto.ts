@@ -73,7 +73,7 @@ export class CreateContractorDto {
   @IsDate()
   @IsOptional()
   @Field(() => Date)
-  defaultPaymentDeadline: Date;
+  defaultPaymentDeadline?: Date;
 
   @ApiProperty()
   @IsEmail()

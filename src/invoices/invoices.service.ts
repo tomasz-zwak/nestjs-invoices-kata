@@ -82,6 +82,7 @@ export class InvoicesService {
   ) {
     const invoice = await this.invoiceRepository.preload({
       id: id,
+      user: user,
       ...invoiceDto,
     });
     if (!invoice)

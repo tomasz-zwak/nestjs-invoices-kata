@@ -24,12 +24,7 @@ import { AuthConfig } from './auth.config';
       }),
     }),
   ],
-  providers: [
-    AuthService,
-    LocalStrategy,
-    JwtStrategy,
-    { provide: APP_GUARD, useClass: JwtAuthGuard },
-  ],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],
   controllers: [AuthController],
 })

@@ -11,6 +11,7 @@ import { Invoice } from '../../invoices/entities/invoice.entity';
 import { User } from '../../user/entities/user.entity';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { defaultPaymentDeadline } from '../../commons/utils/utils';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 @ObjectType()
@@ -23,6 +24,7 @@ export class Contractor {
   @Column({ nullable: false })
   privatePerson: boolean;
 
+  @Exclude()
   @Field(() => [Invoice])
   @OneToMany(() => Invoice, (invoice) => invoice.contractor, {
     nullable: true,
