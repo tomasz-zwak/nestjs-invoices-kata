@@ -59,7 +59,6 @@ export class InvoicesResolver {
     @Args('invoice') invoiceDto: UpdateInvoiceDtoGql,
     @CurrentUser() user: User,
   ) {
-    console.log('id', id);
     return this.invoicesService.update(id, invoiceDto, user);
   }
 

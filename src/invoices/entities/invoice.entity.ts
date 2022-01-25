@@ -16,7 +16,10 @@ import {
 } from '../invoice.type';
 import { Contractor } from '../../contractors/entities/contractor.entity';
 import { InvoiceItem } from './invoice-item.entity';
-import { defaultAccountingPeriod } from '../../commons/utils/utils';
+import {
+  defaultAccountingPeriod,
+  defaultPaymentDeadlineDate,
+} from '../../commons/utils/utils';
 import { Exclude } from 'class-transformer';
 import { Field, Float, ID, ObjectType } from '@nestjs/graphql';
 
@@ -78,7 +81,7 @@ export class Invoice {
   paymentMethod: PaymentMethod;
 
   @Field(() => Date)
-  @Column({ type: 'date' })
+  @Column({ type: 'date', nullable: true })
   paymentDeadline: Date;
 
   @Field(() => Float)
@@ -94,8 +97,8 @@ export class Invoice {
   paidAmount: number;
 
   @Field(() => Date)
-  @Column({ type: 'date' })
-  paidDate: Date;
+  @Column({ type: 'date', default: null })
+  paidDate?: Date;
 
   @Field(() => Contractor)
   @ManyToOne(() => Contractor, (contractor) => contractor.invoices)
@@ -143,7 +146,7 @@ export class Invoice {
 
   populatePaymentDeadline() {
     if (!this.paymentDeadline) {
-      this.paymentDeadline = this.contractor.defaultPaymentDeadline;
+      this.paymentDeadline = defaultPaymentDeadlineDate();
     }
   }
 }

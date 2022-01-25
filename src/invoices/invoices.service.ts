@@ -56,11 +56,11 @@ export class InvoicesService {
   async create(invoiceDto: CreateInvoiceDto, user: User) {
     const invoice = this.invoiceRepository.create({ ...invoiceDto, user });
 
-    const invoiceNo =
+    invoice.invoiceNo =
       invoiceDto.invoiceNo ?? (await this.getNextInvoiceNumber());
 
     const { contractorId, newContractor } = invoiceDto;
-    const contractor = await this.preloadContractor(
+    invoice.contractor = await this.preloadContractor(
       contractorId,
       newContractor,
       user,
@@ -68,15 +68,11 @@ export class InvoicesService {
 
     const { invoiceItems, grossValue, vatValue } =
       this.calculateInvoice(invoice);
+    invoice.invoiceItems = invoiceItems;
+    invoice.grossValue = grossValue;
+    invoice.vatValue = vatValue;
 
-    return await this.invoiceRepository.save({
-      ...invoice,
-      invoiceNo,
-      contractor,
-      invoiceItems,
-      grossValue,
-      vatValue,
-    });
+    return await this.invoiceRepository.save(invoice);
   }
 
   async update(
@@ -88,7 +84,6 @@ export class InvoicesService {
       id: id,
       ...invoiceDto,
     });
-    console.log(typeof id, invoiceDto);
     if (!invoice)
       throw new NotFoundException(`Invoice #${id} could not be found.`);
     if (invoice.approved) {
@@ -96,7 +91,7 @@ export class InvoicesService {
     }
 
     const { contractorId, newContractor } = invoiceDto;
-    const contractor = await this.preloadContractor(
+    invoice.contractor = await this.preloadContractor(
       contractorId,
       newContractor,
       user,
@@ -104,14 +99,11 @@ export class InvoicesService {
 
     const { invoiceItems, grossValue, vatValue } =
       this.calculateInvoice(invoice);
+    invoice.invoiceItems = invoiceItems;
+    invoice.grossValue = grossValue;
+    invoice.vatValue = vatValue;
 
-    return await this.invoiceRepository.save({
-      ...invoice,
-      contractor,
-      invoiceItems,
-      grossValue,
-      vatValue,
-    });
+    return await this.invoiceRepository.save(invoice);
   }
 
   async delete(id: number, user: User) {

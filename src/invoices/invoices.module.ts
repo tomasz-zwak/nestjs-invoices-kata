@@ -26,6 +26,5 @@ import { InvoicesResolver } from './invoices.resolver';
   ],
   providers: [InvoicesService, ContractorsService, InvoicesResolver],
   controllers: [InvoicesController],
-  exports: [InvoicesResolver],
 })
 export class InvoicesModule {}
