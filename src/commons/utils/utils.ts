@@ -19,3 +19,9 @@ export const round = (value: number, precision: number) => {
   const k = Math.pow(10, precision);
   return Math.round(value * k) / k;
 };
+
+export const defaultPaymentDeadlineDate = (): Date => {
+  const date = new Date();
+  date.setDate(date.getDate() + 14);
+  return date;
+};
