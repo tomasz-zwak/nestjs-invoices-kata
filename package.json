@@ -10,6 +10,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "seed:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-seeding/dist/cli.js seed -n src/database/ormconfig.js",
+    "seed:test:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-seeding/dist/cli.js seed -n src/database/ormconfig-test.js",
     "schema:drop": "ts-node ./node_modules/typeorm/cli.js schema:drop -f src/database/ormconfig.js",
     "schema:sync": "ts-node ./node_modules/typeorm/cli.js schema:sync -f src/database/ormconfig.js",
     "schema:reset": "npm run schema:drop && npm run schema:sync && npm run seed:run",
@@ -22,9 +23,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "pretest:e2e": "docker-compose up -d test-db",
+    "pretest:e2e": "docker-compose up -d test-db && docker-compose up -d test-redis",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "posttest:e2e": "docker-compose stop test-db && docker-compose rm -f test-db"
+    "omitted:posttest:e2e": "docker-compose stop test-db && docker-compose rm -f test-db && docker-compose stop test-redis && docker-compose rm -f test-redis"
   },
   "dependencies": {
     "@bull-board/api": "^3.9.0",

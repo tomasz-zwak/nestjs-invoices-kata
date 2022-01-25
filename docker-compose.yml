@@ -1,32 +1,38 @@
-version: "1"
+version: '1'
 services:
   db:
-    image:  mysql
-    restart: always 
+    image: mysql
+    restart: always
     ports:
-      - "3306:3306"
+      - '3306:3306'
     environment:
-       MYSQL_ROOT_PASSWORD: admin
-       MYSQL_DATABASE: invoicesApp
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: invoicesApp
     volumes:
       - mysqldata:/var/lib/mysql
   redis:
     image: redis
     ports:
-      - "6379:6379"
+      - '6379:6379'
     environment:
       - REDIS_PORT_NUMBER=6379
     volumes:
       - redisdata:/data
+  test-db:
+    image: mysql
+    restart: always
+    ports:
+      - '5432:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: invoicesAppTest
+  test-redis:
+    image: redis
+    ports:
+      - '6378:6379'
+    environment:
+      - REDIS_PORT_NUMBER=6378
 
 volumes:
   mysqldata:
   redisdata:
-     
-  # test-db:
-  #   image:  postgres
-  #   restart: always 
-  #   ports:
-  #     - "3306:3306"
-  #   environment:
-  #      MYSQL_ROOT_PASSWORD: admin
