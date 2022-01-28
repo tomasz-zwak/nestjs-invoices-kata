@@ -10,7 +10,9 @@ export const buildInvoicesArray = () => {
   return invoices;
 };
 
-export const buildEntityObject = async <T>(options: MockBuilder<T>) => {
+export const buildEntityObject = async <T>(
+  options: MockBuilder<T> = partial,
+) => {
   const object = { ...options.fields };
   return object as T;
 };
@@ -25,6 +27,7 @@ type MockBuilder<T> =
       fields?: T;
     };
 
+const partial = { partial: true };
 export const mockUser = buildEntityObject<User>({
   partial: true,
   fields: {
