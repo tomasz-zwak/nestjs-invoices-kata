@@ -120,6 +120,9 @@ export class InvoicesService {
     const invoice = await this.invoiceRepository.findOne(invoiceId, {
       relations: ['invoiceItems'],
     });
+    if (!invoice) {
+      throw new NotFoundException(`Invoice #${invoiceId} could not be found.`);
+    }
     return invoice.invoiceItems;
   }
 
